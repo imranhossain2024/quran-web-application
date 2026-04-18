@@ -6,7 +6,9 @@ const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: dirname(__dirname),
+  experimental: {
+    outputFileTracingRoot: dirname(__dirname),
+  }
 };
 
 export default nextConfig;

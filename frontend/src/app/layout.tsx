@@ -1,41 +1,51 @@
-import type { Metadata } from "next";
-import { SettingsProvider } from "@/context/SettingsContext";
-import Navbar from "@/components/Navbar";
-import { Roboto, Amiri, Noto_Sans_Arabic } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Amiri_Quran, Scheherazade_New, Noto_Naskh_Arabic, Inter } from 'next/font/google';
+import './globals.css';
+import { SettingsProvider } from '@/context/SettingsContext';
+import Navbar from '@/components/Navbar';
+import SettingsSidebar from '@/components/SettingsSidebar';
 
-const roboto = Roboto({
-  weight: "400",
-  subsets: ["latin"],
+const inter = Inter({ subsets: ['latin'] });
+
+const amiri = Amiri_Quran({ 
+  weight: ['400'], 
+  subsets: ['arabic'],
+  variable: '--font-amiri'
 });
 
-const amiri = Amiri({
-  weight: ["400", "700"],
-  subsets: ["arabic"],
-  variable: "--font-amiri",
+const scheherazade = Scheherazade_New({ 
+  weight: ['400', '700'], 
+  subsets: ['arabic'],
+  variable: '--font-scheherazade'
 });
 
-const notoArabic = Noto_Sans_Arabic({
-  subsets: ["arabic"],
-  variable: "--font-noto-arabic",
+const notoNaskh = Noto_Naskh_Arabic({ 
+  weight: ['400', '700'], 
+  subsets: ['arabic'],
+  variable: '--font-noto'
 });
 
 export const metadata: Metadata = {
-  title: "Quran Web Application",
-  description: "Quran Web Application Project",
+  title: 'NurulQuran',
+  description: 'A complete Quran web application with Arabic text and English translation.',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" className={`${roboto.className} ${amiri.variable} ${notoArabic.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+    <html lang="en" suppressHydrationWarning className={`${amiri.variable} ${scheherazade.variable} ${notoNaskh.variable}`}>
+      <body className={`${inter.className} bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300`}>
         <SettingsProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+              {children}
+            </main>
+          </div>
+          <SettingsSidebar />
         </SettingsProvider>
       </body>
     </html>

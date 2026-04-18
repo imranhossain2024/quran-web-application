@@ -1,119 +1,99 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import AyahCard from "@/components/AyahCard";
-import quranData from "@/data/quran.json";
+import React, { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import AyahCard from '@/components/AyahCard';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import { Search } from 'lucide-react';
 
-interface SearchResult {
-  surahId: number;
-  surahName: string;
-  surahTransliteration: string;
-  verseId: number;
-  text: string;
-  translation: string;
+function SearchPageContent() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    if (!query) return;
+
+    const fetchResults = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/search?q=${encodeURIComponent(query)}&page=1&limit=50`);
+        const data = await res.json();
+        setResults(data.results);
+        setTotal(data.pagination.total);
+      } catch (err) {
+        console.error('Search failed', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+  }, [query]);
+
+  if (!query) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Search size={48} className="text-neutral-300 dark:text-neutral-700 mb-4" />
+        <h2 className="text-2xl font-bold text-neutral-400">Enter a term to search</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="border-b border-neutral-200 dark:border-neutral-800 pb-8">
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          Search Results
+        </h1>
+        <p className="text-neutral-500 mt-2">
+          {loading ? 'Searching...' : `Found ${total} results for "${query}"`}
+        </p>
+      </div>
+
+      {loading ? (
+        <div className="space-y-12">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="animate-pulse space-y-4">
+              <div className="h-4 w-40 bg-neutral-100 dark:bg-neutral-800 rounded" />
+              <div className="h-10 w-full bg-neutral-100 dark:bg-neutral-800 rounded" />
+              <div className="h-6 w-3/4 bg-neutral-100 dark:bg-neutral-800 rounded" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {results.map((result, i) => (
+            <div key={i} className="bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 text-xs font-bold text-emerald-600 dark:text-emerald-500 mb-4 uppercase tracking-widest">
+                <span>{result.surah_name}</span>
+                <span className="text-neutral-300 dark:text-neutral-700 mx-2">•</span>
+                <span>Ayah {result.ayah_number}</span>
+              </div>
+              <AyahCard 
+                ayah={{ id: result.ayah_number, text: result.text, translation: result.translation }} 
+                highlight={query}
+              />
+            </div>
+          ))}
+
+          {!loading && results.length === 0 && (
+            <div className="text-center py-20">
+              <p className="text-neutral-500">No results found for your search term.</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [totalResults, setTotalResults] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-
-    setLoading(true);
-    setTotalResults(null);
-    setResults([]);
-
-    // JSON ডেটা থেকে সরাসরি সার্চ করা (কোনো ব্যাকএন্ড দরকার নেই)
-    const searchQuery = query.toLowerCase();
-    const matched: SearchResult[] = [];
-
-    for (const surah of quranData) {
-      for (const verse of surah.verses) {
-        if (verse.translation.toLowerCase().includes(searchQuery)) {
-          matched.push({
-            surahId: surah.id,
-            surahName: surah.name,
-            surahTransliteration: surah.transliteration,
-            verseId: verse.id,
-            text: verse.text,
-            translation: verse.translation,
-          });
-        }
-      }
-    }
-
-    setResults(matched);
-    setTotalResults(matched.length);
-    setLoading(false);
-  };
-
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-green-700 mb-2">
-          কুরআনে খুঁজুন
-        </h1>
-        <p className="text-center text-gray-500 mb-8">
-          Search the English translation (e.g., mercy, faith, peace)
-        </p>
-        
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 mb-8">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="What are you looking for?"
-            className="flex-1 px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-          />
-          <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors disabled:opacity-50"
-            disabled={loading}
-          >
-            {loading ? "Searching..." : "Search"}
-          </button>
-        </form>
-
-        {totalResults !== null && !loading && (
-          <p className="text-center text-green-600 font-medium mb-6">
-            Found {totalResults} result{totalResults !== 1 ? "s" : ""}
-          </p>
-        )}
-
-        <div className="space-y-8">
-          {results.length > 0 ? (
-            results.map((verse) => (
-              <div key={`${verse.surahId}-${verse.verseId}`}>
-                <h4 className="text-sm text-green-600 font-semibold mb-3 flex items-center gap-2">
-                  <span className="bg-green-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-                    Surah {verse.surahTransliteration} ({verse.surahName})
-                  </span>
-                  <span className="text-gray-500">
-                    Verse {verse.verseId}
-                  </span>
-                </h4>
-                <AyahCard 
-                  verse={{ 
-                    id: verse.verseId, 
-                    text: verse.text, 
-                    translation: verse.translation 
-                  }} 
-                />
-              </div>
-            ))
-          ) : (
-            !loading && totalResults === 0 && (
-              <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                <p className="text-gray-500 text-lg">কোনো ফলাফল পাওয়া যায়নি। অন্য কিছু লিখে খুঁজুন।</p>
-              </div>
-            )
-          )}
-        </div>
-      </div>
-    </main>
+    <Suspense fallback={<div className="flex justify-center py-20 animate-pulse"><div className="h-8 w-8 bg-neutral-200 dark:bg-neutral-800 rounded-full" /></div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

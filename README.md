@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NurulQuran
 
-## Getting Started
+A complete Quran web application with Arabic text and English translation.
 
-First, run the development server:
+## Features
+- Browse all 114 Surahs
+- Read full Ayat with Arabic text and English translation
+- Search across all Ayahs by translation text
+- Customizable Arabic font (3 options) and font sizes
+- Settings persist across sessions
+- Responsive design, mobile-friendly
 
-```bash
+## Tech Stack
+- Backend: Node.js + Express
+- Frontend: Next.js 14 (App Router, SSG)
+- Styling: Tailwind CSS
+
+## Local Development
+
+### Prerequisites
+- Node.js 18+
+- npm 9+
+
+### Setup
+git clone 
+cd NurulQuran
+npm run install:all
+
+### Create environment files
+
+backend/.env:
+PORT=4000
+FRONTEND_URL=http://localhost:3000
+
+frontend/.env.local:
+NEXT_PUBLIC_API_URL=http://localhost:4000
+
+### Run
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Backend: http://localhost:4000
+Frontend: http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Reference
+GET /api/surahs               — All 114 surahs
+GET /api/surahs/:id/ayahs    — All ayahs for a surah
+GET /api/search?q=&page=&limit= — Search by translation
+GET /health                   — Health check
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
+- Frontend → Vercel (set NEXT_PUBLIC_API_URL to your backend URL)
+- Backend → Railway or Render (set PORT and FRONTEND_URL)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Live Demo
+[Add your Vercel URL here]
