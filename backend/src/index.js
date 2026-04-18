@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+const surahRoutes = require('./routes/surah.route');
 // Initialize the Express app
 const app = express();
 
@@ -9,6 +9,10 @@ const app = express();
 app.use(cors()); 
 // Parse incoming JSON requests automatically
 app.use(express.json());
+
+// API Routes
+app.use('/api/surahs', surahRoutes);
+
 
 // Basic Welcome Route (To check if server works)
 app.get('/', (req, res) => {
