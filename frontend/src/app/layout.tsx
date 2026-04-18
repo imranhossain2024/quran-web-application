@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono,Roboto } from "next/font/google";
+import { SettingsProvider } from "@/context/SettingsContext";
+import Navbar from "@/components/Navbar";
+import { Roboto, Amiri, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  weight: "400",
   subsets: ["latin"],
 });
 
-const roboto = Roboto({
-  weight: '400',
-  subsets: ['latin'],
-})
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const amiri = Amiri({
+  weight: ["400", "700"],
+  subsets: ["arabic"],
+  variable: "--font-amiri",
+});
+
+const notoArabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-noto-arabic",
 });
 
 export const metadata: Metadata = {
@@ -27,9 +31,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-   <html lang="en" className={`${roboto.className} h-full antialiased`}>
+    <html lang="en" className={`${roboto.className} ${amiri.variable} ${notoArabic.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <main className="flex-1">{children}</main>
+        <SettingsProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+        </SettingsProvider>
       </body>
     </html>
   );
