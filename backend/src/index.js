@@ -11,7 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
+const searchRoutes = require('./routes/search.route');
 app.use('/api/surahs', surahRoutes);
+app.use('/api/search', searchRoutes);
 
 
 // Basic Welcome Route (To check if server works)
