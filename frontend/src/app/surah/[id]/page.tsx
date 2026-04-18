@@ -2,23 +2,20 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import AyahCard from '@/components/AyahCard';
 
+import quranData from '@/data/quran.json';
+
 async function getSurah(id: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/surahs/${id}/ayahs`, {
-    next: { revalidate: 3600 }
-  });
+  const surah = quranData.find(s => s.id.toString() === id);
   
-  if (!res.ok) {
-    throw new Error('Failed to fetch surah');
+  if (!surah) {
+    throw new Error('Failed to find surah');
   }
   
-  return res.json();
+  return surah;
 }
 
 export async function generateStaticParams() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/surahs`);
-  const surahs = await res.json();
-  
-  return surahs.map((surah: any) => ({
+  return quranData.map((surah: any) => ({
     id: surah.id.toString(),
   }));
 }

@@ -1,16 +1,11 @@
 import SurahCard from '@/components/SurahCard';
 import SearchBar from '@/components/SearchBar';
 
+import quranData from '@/data/quran.json';
+
 async function getSurahs() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/surahs`, {
-    next: { revalidate: 3600 } // Cache for 1 hour
-  });
-  
-  if (!res.ok) {
-    throw new Error('Failed to fetch surahs');
-  }
-  
-  return res.json();
+  // Return a summary of surahs without all the verses to keep initial state light
+  return quranData.map(({ verses, ...surah }) => surah);
 }
 
 export default async function HomePage() {
