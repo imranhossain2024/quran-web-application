@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AyahCard from "@/components/AyahCard";
+import quranData from "@/data/quran.json";
 
 interface SearchResult {
   surahId: number;
@@ -17,32 +18,37 @@ export default function SearchPage() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [totalResults, setTotalResults] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
 
     setLoading(true);
-    setError("");
     setTotalResults(null);
     setResults([]);
 
-    try {
-      const res = await fetch(`http://localhost:5000/api/search?q=${encodeURIComponent(query)}`);
-      
-      if (!res.ok) {
-        throw new Error("Search failed");
+    // JSON ডেটা থেকে সরাসরি সার্চ করা (কোনো ব্যাকএন্ড দরকার নেই)
+    const searchQuery = query.toLowerCase();
+    const matched: SearchResult[] = [];
+
+    for (const surah of quranData) {
+      for (const verse of surah.verses) {
+        if (verse.translation.toLowerCase().includes(searchQuery)) {
+          matched.push({
+            surahId: surah.id,
+            surahName: surah.name,
+            surahTransliteration: surah.transliteration,
+            verseId: verse.id,
+            text: verse.text,
+            translation: verse.translation,
+          });
+        }
       }
-      
-      const data = await res.json();
-      setResults(data.results || []);
-      setTotalResults(data.totalResults || 0);
-    } catch {
-      setError("সার্চ করতে কোনো সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।");
-    } finally {
-      setLoading(false);
     }
+
+    setResults(matched);
+    setTotalResults(matched.length);
+    setLoading(false);
   };
 
   return (
@@ -72,8 +78,6 @@ export default function SearchPage() {
           </button>
         </form>
 
-        {error && <p className="text-red-500 text-center mb-6">{error}</p>}
-
         {totalResults !== null && !loading && (
           <p className="text-center text-green-600 font-medium mb-6">
             Found {totalResults} result{totalResults !== 1 ? "s" : ""}
@@ -102,9 +106,9 @@ export default function SearchPage() {
               </div>
             ))
           ) : (
-            !loading && !error && totalResults === 0 && (
+            !loading && totalResults === 0 && (
               <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                <p className="text-gray-500 text-lg">কোনো ফলাফল পাওয়া যায়নি। অন্য কিছু লিখে খুঁজুন।</p>
+                <p className="text-gray-500 text-lg">কোনো ফলাফল পাওয়া যায়নি। অন্য কিছু লিখে খুঁজুন।</p>
               </div>
             )
           )}

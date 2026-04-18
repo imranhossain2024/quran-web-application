@@ -1,4 +1,5 @@
 import Link from "next/link";
+import quranData from "@/data/quran.json";
 
 interface Surah {
   id: number;
@@ -9,36 +10,16 @@ interface Surah {
   total_verses: number;
 }
 
-export default async function Home() {
-  let surahs: Surah[] = [];
-
-  try {
-    // ব্যাকএন্ড থেকে ডেটা ফেচ করা
-    const res = await fetch("http://localhost:5000/api/surahs", {
-      cache: "no-store", // ডেভেলপমেন্টের সুবিধার জন্য, যাতে রিফ্রেশ করলে নতুন ডাটা পায়
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP Error: ${res.status}`);
-    }
-
-    const data = await res.json();
-    // ব্যাকএন্ডের রেসপন্স অনুযায়ী ডাটা এক্সেস করা
-    surahs = Array.isArray(data) ? data : data.data || [];
-  } catch (error) {
-    // ব্যাকএন্ড ডাউন থাকলে এলার্ট দেখাবে
-    return (
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-green-700">
-          NurulQuran
-        </h1>
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center shadow-sm">
-          <strong>Tragic Error:</strong> ব্যাকএন্ড সার্ভার (Express) থেকে ডেটা
-          লোড করা যাচ্ছে না। আপনার Node.js সার্ভার চালু আছে কিনা চেক করুন।
-        </div>
-      </main>
-    );
-  }
+export default function Home() {
+  // JSON ফাইল থেকে সরাসরি ডেটা পড়া (কোনো fetch দরকার নেই)
+  const surahs: Surah[] = quranData.map((s) => ({
+    id: s.id,
+    name: s.name,
+    transliteration: s.transliteration,
+    translation: s.translation,
+    type: s.type,
+    total_verses: s.total_verses,
+  }));
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -49,7 +30,7 @@ export default async function Home() {
             NurulQuran
           </h1>
           <p className="text-lg md:text-xl text-green-100 mb-8">
-            কুরআনের আলো ছড়িয়ে পড়ুক আপনার হৃদয়ে। খুঁজুন আপনার কাঙ্ক্ষিত আয়াত এবং
+            কুরআনের আলো ছড়িয়ে পড়ুক আপনার হৃদয়ে। খুঁজুন আপনার কাঙ্ক্ষিত আয়াত এবং
             সূরা।
           </p>
           <Link

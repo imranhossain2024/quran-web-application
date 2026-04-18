@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AyahCard from "@/components/AyahCard";
+import quranData from "@/data/quran.json";
 
 interface Verse {
   id: number;
@@ -16,50 +17,29 @@ interface SurahDetail {
   total_verses: number;
   verses: Verse[];
 }
-// SSG এর জন্য ১১৪টি সূরার আইডি জেনারেট করা
+
+// SSG এর জন্য ১১৪টি সূরার আইডি জেনারেট করা (JSON থেকে সরাসরি)
 export async function generateStaticParams() {
-  try {
-    const res = await fetch("http://localhost:5000/api/surahs");
-    if (!res.ok) return [];
-    const data = await res.json();
-    const surahs = Array.isArray(data) ? data : data.data || [];
-    return surahs.map((surah: { id: number }) => ({
-      id: surah.id.toString(),
-    }));
-  } catch (error) {
-    console.error("Error generating static params:", error);
-    return [];
-  }
+  return quranData.map((surah) => ({
+    id: surah.id.toString(),
+  }));
 }
 
-// Next.js 14+ এ params এক্সেস করার নিয়ম
-export default async function SurahDetail({ params }: { params: Promise<{ id: string }> }) {
+// Next.js 14+ এ params এক্সেস করার নিয়ম
+export default async function SurahDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const surahId = resolvedParams.id;
-  let surah: SurahDetail | null = null;
 
-  try {
-    // ব্যাকএন্ড থেকে নির্দিষ্ট সূরার তথ্য ফেচ করা
-    const res = await fetch(`http://localhost:5000/api/surahs/${surahId}`);
+  // JSON থেকে সরাসরি নির্দিষ্ট সূরার তথ্য পড়া
+  const surah: SurahDetail | undefined = quranData.find(
+    (s) => s.id.toString() === surahId
+  );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch");
-    }
-
-    surah = await res.json();
-  } catch {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center text-red-500">
-        সূরার ডেটা লোড করা ব্যর্থ হয়েছে!
-      </div>
-    );
-  }
-
-  // যদি ওই ID বা সূরা না পাওয়া যায়
+  // যদি ওই ID বা সূরা না পাওয়া যায়
   if (!surah) {
     return (
       <div className="container mx-auto px-4 py-8 text-center text-gray-500">
-        সূরাটি পাওয়া যায়নি। অথবা ব্যাকএন্ড থেকে ডেটা আসেনি।
+        সূরাটি পাওয়া যায়নি। অনুগ্রহ করে সঠিক সূরা নম্বর ব্যবহার করুন।
       </div>
     );
   }
