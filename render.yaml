@@ -15,10 +15,7 @@ services:
       - key: NODE_VERSION
         value: 18
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: nurul-quran-frontend
-          property: host
+        value: https://nurul-quran-frontend.onrender.com
 
   # ----------------------------------------------------------------------------
   # Frontend Next.js Service
@@ -32,9 +29,6 @@ services:
     startCommand: npm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: nurul-quran-backend
-          property: host
+        value: https://nurul-quran-backend.onrender.com
       - key: NODE_VERSION
         value: 18
