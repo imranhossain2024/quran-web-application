@@ -1,0 +1,40 @@
+services:
+  # ----------------------------------------------------------------------------
+  # Backend API Service
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: nurul-quran-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_VERSION
+        value: 18
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: nurul-quran-frontend
+          property: host
+
+  # ----------------------------------------------------------------------------
+  # Frontend Next.js Service
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: nurul-quran-frontend
+    env: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: nurul-quran-backend
+          property: host
+      - key: NODE_VERSION
+        value: 18
