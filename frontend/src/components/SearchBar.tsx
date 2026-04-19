@@ -69,18 +69,6 @@ function SearchBarContent({ onSearch, className = '' }: SearchBarProps) {
     setQuery(value);
     setShowSuggestions(true);
     setSelectedIndex(-1);
-
-    // Clear previous debounce timer
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Only auto-search after user stops typing for 800ms
-    if (value.trim().length >= 3) {
-      debounceRef.current = setTimeout(() => {
-        performSearch(value);
-      }, 800);
-    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
