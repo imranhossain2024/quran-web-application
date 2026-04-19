@@ -54,7 +54,7 @@ function SearchBarContent({ onSearch, className = '' }: SearchBarProps) {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    inputRef.current?.focus();
+    router.push('/');
   };
 
   return (
@@ -69,7 +69,7 @@ function SearchBarContent({ onSearch, className = '' }: SearchBarProps) {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         className="block w-full pl-10 pr-10 py-3 bg-neutral-100 dark:bg-neutral-800 border-none rounded-xl text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-emerald-500 placeholder-neutral-500 dark:placeholder-neutral-500 transition-all sm:text-sm"
-        placeholder="Search for translation text..."
+        placeholder="Search surah name or translation..."
       />
       {query && (
         <button

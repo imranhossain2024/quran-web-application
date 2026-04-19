@@ -18,17 +18,39 @@ router.get('/', (req, res) => {
   const results = [];
   
   quranData.forEach(surah => {
-    surah.verses.forEach(ayah => {
-      if (ayah.translation.toLowerCase().includes(query)) {
+    // Check if the query matches the surah name, transliteration, or translation
+    const surahMatch = 
+      surah.name.toLowerCase().includes(query) ||
+      surah.transliteration.toLowerCase().includes(query) ||
+      surah.translation.toLowerCase().includes(query);
+
+    if (surahMatch) {
+      // If surah name matches, include all ayahs of that surah
+      surah.verses.forEach(ayah => {
         results.push({
           surah_id: surah.id,
           surah_name: surah.transliteration,
           ayah_number: ayah.id,
           text: ayah.text,
-          translation: ayah.translation
+          translation: ayah.translation,
+          match_type: 'surah'
         });
-      }
-    });
+      });
+    } else {
+      // Otherwise search within ayah translations
+      surah.verses.forEach(ayah => {
+        if (ayah.translation.toLowerCase().includes(query)) {
+          results.push({
+            surah_id: surah.id,
+            surah_name: surah.transliteration,
+            ayah_number: ayah.id,
+            text: ayah.text,
+            translation: ayah.translation,
+            match_type: 'ayah'
+          });
+        }
+      });
+    }
   });
 
   const startIndex = (page - 1) * limit;
