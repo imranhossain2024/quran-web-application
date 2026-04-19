@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AyahCard from '@/components/AyahCard';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
+import SearchBar from '@/components/SearchBar';
 import { Search } from 'lucide-react';
 
 function SearchPageContent() {
@@ -35,15 +36,25 @@ function SearchPageContent() {
 
   if (!query) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Search size={48} className="text-neutral-300 dark:text-neutral-700 mb-4" />
-        <h2 className="text-2xl font-bold text-neutral-400">Enter a term to search</h2>
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="pt-4">
+          <SearchBar className="max-w-xl mx-auto" />
+        </div>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <Search size={48} className="text-neutral-300 dark:text-neutral-700 mb-4" />
+          <h2 className="text-2xl font-bold text-neutral-400">Enter a term to search</h2>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {/* Search bar stays visible with the current query */}
+      <div className="pt-4">
+        <SearchBar className="max-w-xl mx-auto" />
+      </div>
+
       <div className="border-b border-neutral-200 dark:border-neutral-800 pb-8">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
           Search Results

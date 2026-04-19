@@ -2,12 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, Settings, Moon, Sun } from 'lucide-react';
-import { useSettings } from '@/context/SettingsContext';
+import { Search, Settings } from 'lucide-react';
 import SearchBar from './SearchBar';
 
 export default function Navbar() {
-  const { darkMode, setDarkMode } = useSettings();
   const [showSearch, setShowSearch] = useState(false);
 
   return (
@@ -24,14 +22,6 @@ export default function Navbar() {
             aria-label="Search"
           >
             <Search size={20} />
-          </button>
-          
-          <button 
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
-            aria-label="Toggle Dark Mode"
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
           <button 
